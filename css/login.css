@@ -1,0 +1,104 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #1E9FFF 0%, #5FB878 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.login-wrap {
+    width: 420px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+.login-header {
+    text-align: center;
+    padding: 30px 20px 10px;
+}
+.login-header .logo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1E9FFF;
+}
+.login-header .subtitle {
+    font-size: 13px;
+    color: #999;
+    margin-top: 8px;
+}
+.login-body { padding: 10px 30px 30px; }
+.layui-tab { margin: 0; }
+.layui-tab-title {
+    text-align: center;
+    border-bottom: none;
+    margin-bottom: 20px;
+}
+.layui-tab-title li {
+    min-width: 80px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0 20px;
+}
+.layui-tab-title .layui-this { color: #1E9FFF; }
+.layui-tab-title .layui-this:after {
+    border: none;
+    border-bottom: 3px solid #1E9FFF;
+    border-radius: 2px;
+}
+.layui-form-item { margin-bottom: 18px; }
+.layui-form-item .layui-input-wrap {
+    border-radius: 8px;
+    border: 1px solid #e6e6e6;
+    transition: border-color 0.3s;
+}
+.layui-form-item .layui-input-wrap:hover,
+.layui-form-item .layui-input-wrap.layui-input-focus {
+    border-color: #1E9FFF;
+}
+.layui-input-wrap .layui-input-prefix {
+    padding-left: 12px;
+}
+.layui-input-wrap .layui-input-prefix i {
+    font-size: 18px;
+    color: #999;
+}
+.layui-input-wrap input {
+    border: none !important;
+    border-radius: 0 8px 8px 0;
+    height: 44px;
+    line-height: 44px;
+    padding-left: 8px;
+}
+.layui-btn-fluid {
+    height: 44px;
+    line-height: 44px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1E9FFF, #5FB878);
+    border: none;
+}
+.layui-btn-fluid:hover {
+    opacity: 0.9;
+}
+.reg-tip {
+    font-size: 12px;
+    color: #999;
+    padding: 8px 0;
+}
+.alert-msg {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+.alert-error { background: #FFF0F0; color: #FF5722; border: 1px solid #FFD4D4; }
+.alert-success { background: #F0FFF4; color: #5FB878; border: 1px solid #D4FFE4; }
+.alert-warning { background: #FFF8F0; color: #FF9800; border: 1px solid #FFE4C4; }
+
+@media screen and (max-width: 480px) {
+    .login-wrap { width: 92%; border-radius: 12px; }
+    .login-body { padding: 10px 20px 25px; }
+}

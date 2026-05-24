@@ -1,0 +1,102 @@
+2026-05-23 22:22:56 pid:415602 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 22:56:39 pid:417355 Workerman[ws_server.php] status 
+2026-05-23 23:31:20 pid:419559 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:31:20 pid:419559 Workerman[ws_server.php] already running
+2026-05-23 23:34:31 pid:419769 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:34:31 pid:419783 Workerman[ws_server.php] stop 
+2026-05-23 23:34:31 pid:419783 Workerman[ws_server.php] not run
+2026-05-23 23:44:32 pid:420708 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:32 pid:420708 Workerman[ws_server.php] already running
+2026-05-23 23:44:33 pid:420712 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:33 pid:420712 Workerman[ws_server.php] already running
+2026-05-23 23:44:36 pid:420713 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:36 pid:420713 Workerman[ws_server.php] already running
+2026-05-23 23:44:41 pid:420717 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:41 pid:420717 Workerman[ws_server.php] already running
+2026-05-23 23:44:44 pid:420719 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:44 pid:420719 Workerman[ws_server.php] already running
+2026-05-23 23:44:46 pid:420722 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:46 pid:420722 Workerman[ws_server.php] already running
+2026-05-23 23:44:50 pid:420730 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:50 pid:420730 Workerman[ws_server.php] already running
+2026-05-23 23:44:54 pid:420735 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:44:54 pid:420735 Workerman[ws_server.php] already running
+2026-05-23 23:44:57 pid:420738 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-23 23:44:57 pid:420738 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-23 23:45:00 pid:420739 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-23 23:45:00 pid:420739 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-23 23:45:03 pid:420775 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-23 23:45:03 pid:420775 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-23 23:45:08 pid:420779 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-23 23:45:08 pid:420779 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-23 23:48:37 pid:420928 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:51:06 pid:421080 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-23 23:51:15 pid:421087 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] status 
+2026-05-23 23:56:17 pid:421248 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] restart 
+2026-05-23 23:56:17 pid:421248 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] is stopping ...
+2026-05-23 23:56:17 pid:421082 Workerman[ws_server.php] stopping ...
+2026-05-23 23:56:19 pid:421082 worker[DeltaWS:421083] exit with status 9
+2026-05-23 23:56:19 pid:421082 Workerman[ws_server.php] has been stopped
+2026-05-23 23:56:19 pid:421248 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] stop success
+2026-05-23 23:58:39 pid:421308 Workerman[ws_server.php] stop 
+2026-05-23 23:58:39 pid:421308 Workerman[ws_server.php] is stopping ...
+2026-05-23 23:58:39 pid:421250 Workerman[ws_server.php] stopping ...
+2026-05-23 23:58:41 pid:421250 worker[DeltaWS:421251] exit with status 9
+2026-05-23 23:58:41 pid:421250 Workerman[ws_server.php] has been stopped
+2026-05-23 23:58:41 pid:421308 Workerman[ws_server.php] stop success
+2026-05-23 23:58:42 pid:421318 Workerman[ws_server.php] start in DAEMON mode
+2026-05-23 23:58:42 pid:421322 Workerman[ws_server.php] status 
+2026-05-24 00:13:25 pid:422687 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:13:25 pid:422691 Workerman[ws_server.php] status 
+2026-05-24 00:31:27 pid:423790 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 00:32:25 pid:423819 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 00:40:30 pid:424438 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 00:42:20 pid:424438 Workerman[ws_server.php] stopping ...
+2026-05-24 00:42:20 pid:424438 Workerman[ws_server.php] has been stopped
+2026-05-24 00:42:56 pid:424635 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-24 00:42:59 pid:424639 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-24 00:42:59 pid:424639 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-24 00:43:02 pid:424647 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-24 00:43:02 pid:424647 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-24 00:43:06 pid:424653 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] start in DAEMON mode
+2026-05-24 00:43:06 pid:424653 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] already running
+2026-05-24 00:43:31 pid:424666 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:43:31 pid:424666 Workerman[ws_server.php] already running
+2026-05-24 00:43:33 pid:424667 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:43:33 pid:424667 Workerman[ws_server.php] already running
+2026-05-24 00:43:36 pid:424671 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:43:36 pid:424671 Workerman[ws_server.php] already running
+2026-05-24 00:43:41 pid:424678 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:43:41 pid:424678 Workerman[ws_server.php] already running
+2026-05-24 00:44:15 pid:424704 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:17 pid:424709 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:17 pid:424709 Workerman[ws_server.php] already running
+2026-05-24 00:44:20 pid:424715 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:20 pid:424715 Workerman[ws_server.php] already running
+2026-05-24 00:44:25 pid:424720 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:25 pid:424720 Workerman[ws_server.php] already running
+2026-05-24 00:44:26 pid:424722 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:26 pid:424722 Workerman[ws_server.php] already running
+2026-05-24 00:44:29 pid:424723 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:29 pid:424723 Workerman[ws_server.php] already running
+2026-05-24 00:44:32 pid:424724 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:32 pid:424724 Workerman[ws_server.php] already running
+2026-05-24 00:44:36 pid:424725 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 00:44:36 pid:424725 Workerman[ws_server.php] already running
+2026-05-24 00:52:17 pid:425006 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 00:52:17 pid:425006 Workerman[ws_server.php] already running
+2026-05-24 00:52:24 pid:425007 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 00:52:24 pid:425007 Workerman[ws_server.php] already running
+2026-05-24 00:52:35 pid:425012 Workerman[ws_server.php] start in DEBUG mode
+2026-05-24 01:00:56 pid:425012 Workerman[ws_server.php] stopping ...
+2026-05-24 01:00:56 pid:425012 Workerman[ws_server.php] has been stopped
+2026-05-24 01:01:44 pid:425737 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 01:01:46 pid:425743 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 01:01:46 pid:425743 Workerman[ws_server.php] already running
+2026-05-24 01:01:50 pid:425747 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 01:01:50 pid:425747 Workerman[ws_server.php] already running
+2026-05-24 01:01:54 pid:425748 Workerman[ws_server.php] start in DAEMON mode
+2026-05-24 01:01:54 pid:425748 Workerman[ws_server.php] already running
+2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] restart 
+2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] is stopping ...
+2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] stop success

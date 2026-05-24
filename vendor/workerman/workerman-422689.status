@@ -1,0 +1,10 @@
+a:1:{i:422690;a:2:{s:4:"name";s:7:"DeltaWS";s:6:"listen";s:24:"websocket://0.0.0.0:8282";}}
+----------------------------------------------GLOBAL STATUS----------------------------------------------------
+Workerman version:4.1.17          PHP version:7.2.33
+start time:2026-05-24 00:13:25   run 0 days 0 hours   
+load average: 0.64, 0.75, 0.88   event-loop:\Workerman\Events\Select
+1 workers       1 processes
+worker_name  exit_status      exit_count
+DeltaWS      0                0
+----------------------------------------------PROCESS STATUS---------------------------------------------------
+pid	memory  listening                worker_name  connections send_fail timers  total_request qps    status
