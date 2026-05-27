@@ -1,16 +1,50 @@
-/* 全局动画 */
-body { background: #f2f3f5; transition: background 0.3s; }
-.layui-btn { transition: all 0.2s ease; }
-.layui-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.layui-btn:active { transform: translateY(0); }
-.module-panel { animation: fadeIn 0.3s ease; }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* 移动端表格滚动 */
+/* ==========================================================================
+   3. 全局编辑框/详情框 自适应内容长度（彻底随内容生长）
+   ========================================================================== */
 @media screen and (max-width: 768px) {
-    .layui-table-box { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
-    .layui-table { min-width: 650px; }
+    /* 核心修改：移除 max-height 限制，让高度 auto */
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) {
+        width: auto !important;          
+        min-width: 85% !important;      
+        max-width: 95% !important;      
+        left: 50% !important;           
+        transform: translateX(-50%) !important;
+        margin-left: 0 !important;      
+        
+        /* 去掉高度限制，让弹窗随内容自由舒展 */
+        height: auto !important; 
+        max-height: 90vh !important; /* 仅保留一个极大的安全边界，防止内容超长溢出屏幕外 */
+        box-sizing: border-box;
+    }
+
+    /* 内容区也完全释放高度 */
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) .layui-layer-content {
+        height: auto !important;
+        max-height: none !important; /* 彻底移除内容区的高度束缚 */
+        padding: 20px !important;
+    }
+
+    /* 其余布局保持不变，确保表单在弹窗内整齐排列 */
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) .layui-form-item {
+        margin-bottom: 15px !important;
+    }
+    
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) .layui-form-label {
+        display: block !important;
+        float: none !important;
+        text-align: left !important;
+        width: 100% !important;
+        padding: 0 0 6px 0 !important;
+        font-weight: bold;
+    }
+
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) .layui-input-block {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    body .layui-layer:not(.layui-layer-dialog):not(.layui-layer-tips) .layui-btn:not(.layui-btn-inline) {
+        width: 100% !important;
+        display: block !important;
+    }
 }

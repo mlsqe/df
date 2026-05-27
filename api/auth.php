@@ -11,19 +11,13 @@ switch ($action) {
     case 'login':
         $username = trim($input['username'] ?? '');
         $password = trim($input['password'] ?? '');
-        if ($username === '' || $password === '') {
-            jsonResponse(['success' => false, 'message' => '用户名和密码不能为空']);
-        }
+        if ($username === '' || $password === '') jsonResponse(['success' => false, 'message' => '用户名和密码不能为空']);
         $db = getDB();
         $stmt = $db->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
-        if (!$user) {
-            jsonResponse(['success' => false, 'message' => '用户名或密码错误']);
-        }
-        if ($user['status'] === 'banned') {
-            jsonResponse(['success' => false, 'message' => '账号已被封禁，请联系管理员']);
-        }
+        if (!$user) jsonResponse(['success' => false, 'message' => '用户名或密码错误']);
+        if ($user['status'] === 'banned') jsonResponse(['success' => false, 'message' => '账号已被封禁，请联系管理员']);
         if (password_verify($password, $user['password_hash'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
@@ -52,11 +46,12 @@ switch ($action) {
         $boosterStatus = 'pending';
         $inviteUsed = false;
         $finalRegisterMode = $boosterMode;
+        // 默认角色为 user，若选择打手则改为 pending_booster
+        $finalRole = 'user';
 
         if ($role === 'booster') {
-            if (empty($phone) && empty($wechat) && empty($qq)) {
-                jsonResponse(['success' => false, 'message' => '请至少填写一种联系方式']);
-            }
+            $finalRole = 'pending_booster';   // 预备打手独立角色
+            if (empty($phone) && empty($wechat) && empty($qq)) jsonResponse(['success' => false, 'message' => '请至少填写一种联系方式']);
             switch ($boosterMode) {
                 case 'invite':
                     if ($inviteCode === '') jsonResponse(['success' => false, 'message' => '请填写邀请码']);
@@ -79,9 +74,7 @@ switch ($action) {
                         $finalRegisterMode = 'invite';
                     } elseif ($userSelectMode === 'deposit') {
                         $finalRegisterMode = 'deposit';
-                    } else {
-                        jsonResponse(['success' => false, 'message' => '请选择邀请码或押金']);
-                    }
+                    } else jsonResponse(['success' => false, 'message' => '请选择邀请码或押金']);
                     break;
                 case 'free':
                 default:
@@ -90,28 +83,23 @@ switch ($action) {
             }
         }
 
-        $res = register($username, $password, '', '', $role);
+        $res = register($username, $password, '', '', $finalRole);
         if ($res['success']) {
             $userId = $res['user_id'];
-            if ($role === 'booster') {
+            if ($finalRole === 'pending_booster') {
                 if ($inviteUsed && isset($inv)) {
                     $db->prepare("UPDATE invite_codes SET used_by=?, status='used', used_at=NOW() WHERE id=?")->execute([$userId, $inv['id']]);
                 }
                 $defaultLevel = $db->query("SELECT id FROM booster_levels ORDER BY sort_order ASC LIMIT 1")->fetchColumn();
                 $db->prepare("INSERT INTO boosters (user_id, real_name, phone, wechat, qq, level_id, status, deposit_paid, register_mode) VALUES (?,?,?,?,?,?,?,?,?)")
                    ->execute([$userId, '', $phone, $wechat, $qq, $defaultLevel ?: null, $boosterStatus, 0, $finalRegisterMode]);
-
                 publishTableReload('boosters');
                 publishTableReload('users');
             }
             $msg = '注册成功';
-            if ($role === 'booster') {
-                $msg = "注册成功！您的打手申请已提交，请等待管理员审核。";
-            }
+            if ($finalRole === 'pending_booster') $msg = "注册成功！您的打手申请已提交，请等待管理员审核。";
             jsonResponse(['success' => true, 'message' => $msg]);
-        } else {
-            jsonResponse($res);
-        }
+        } else jsonResponse($res);
         break;
 
     case 'logout':

@@ -71,6 +71,48 @@ switch ($action) {
         jsonResponse(['success' => true, 'orders' => $orders]);
         break;
 
+    // ========== 新增：我的订单（带分页，供前端表格使用） ==========
+    case 'list_my_orders':
+        $page = max(1, intval($_GET['page'] ?? 1));
+        $limit = max(1, intval($_GET['limit'] ?? 20));
+        $offset = ($page - 1) * $limit;
+
+        $countStmt = $db->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ?");
+        $countStmt->execute([$userId]);
+        $total = (int)$countStmt->fetchColumn();
+
+        $sql = "SELECT o.*, ub.username AS booster_name 
+                FROM orders o 
+                LEFT JOIN boosters b ON o.booster_id = b.id 
+                LEFT JOIN users ub ON b.user_id = ub.id 
+                WHERE o.user_id = ? 
+                ORDER BY o.created_at DESC 
+                LIMIT {$offset}, {$limit}";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$userId]);
+        $data = $stmt->fetchAll();
+
+        echo json_encode(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $data], JSON_UNESCAPED_UNICODE);
+        exit;
+        break;
+    case 'cancel_order':
+    $orderId = intval($input['order_id']);
+    $stmt = $db->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?");
+    $stmt->execute([$orderId, $userId]);
+    $order = $stmt->fetch();
+    if (!$order) jsonResponse(['success' => false, 'message' => '订单不存在']);
+    // 只有待接单且已付款，或未付款的订单可以取消
+    if (!($order['status'] === 'pending' || $order['payment_status'] === 'unpaid')) {
+        jsonResponse(['success' => false, 'message' => '当前状态不可取消']);
+    }
+    $db->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ?")->execute([$orderId]);
+    // 如果已付款，退款（根据业务需要，这里简单退款到余额）
+    if ($order['payment_status'] === 'paid') {
+        addTransaction($userId, 'refund', $order['amount'], $orderId, '取消订单退款 #' . $order['order_no']);
+    }
+    publishTableReload('userOrder');
+    jsonResponse(['success' => true, 'message' => '订单已取消']);
+    break;
     case 'accept':
         $orderId = intval($input['order_id']);
         $bstmt = $db->prepare("SELECT id FROM boosters WHERE user_id = ? AND status = 'active'");
@@ -161,52 +203,42 @@ switch ($action) {
         break;
 
     case 'list_history':
-        if (!isLoggedIn()) jsonResponse(['success' => false, 'message' => '请先登录'], 401);
         $status = $_GET['status'] ?? '';
-        $type = $_GET['type'] ?? '';
         $page = intval($_GET['page'] ?? 1);
         $limit = intval($_GET['limit'] ?? 20);
-        if ($type === 'booster') {
-            $boosterStmt = $db->prepare("SELECT id FROM boosters WHERE user_id = ? AND status = 'active'");
-            $boosterStmt->execute([$userId]);
-            $boosterId = $boosterStmt->fetchColumn();
-            if (!$boosterId) jsonResponse(['success' => false, 'message' => '非打手或未激活']);
-            $where = "o.booster_id = ? AND o.status IN ('completed','cancelled')";
-            $params = [$boosterId];
-        } elseif ($type === 'user') {
-            $where = "o.user_id = ? AND o.status IN ('completed','cancelled')";
-            $params = [$userId];
-        } else {
-            $boosterStmt = $db->prepare("SELECT id FROM boosters WHERE user_id = ? AND status = 'active'");
-            $boosterStmt->execute([$userId]);
-            $boosterId = $boosterStmt->fetchColumn();
-            if ($boosterId) {
-                $where = "o.booster_id = ? AND o.status IN ('completed','cancelled')";
-                $params = [$boosterId];
-            } else {
-                $where = "o.user_id = ? AND o.status IN ('completed','cancelled')";
-                $params = [$userId];
-            }
-        }
+        $offset = ($page - 1) * $limit;
+        $where = "o.user_id = ? AND o.status IN ('completed','cancelled','disputed')";
+        $params = [$userId];
         if (!empty($status)) { $where .= " AND o.status = ?"; $params[] = $status; }
         $countStmt = $db->prepare("SELECT COUNT(*) FROM orders o WHERE $where");
         $countStmt->execute($params);
         $total = (int)$countStmt->fetchColumn();
-        $offset = ($page - 1) * $limit;
-        $sql = "SELECT o.*, u.username AS user_name, ub.username AS booster_name
+        $sql = "SELECT o.*, ub.username AS booster_name
                 FROM orders o
-                JOIN users u ON o.user_id = u.id
                 LEFT JOIN boosters b ON o.booster_id = b.id
                 LEFT JOIN users ub ON b.user_id = ub.id
                 WHERE $where
-                ORDER BY o.completed_at DESC
+                ORDER BY o.created_at DESC
                 LIMIT {$offset}, {$limit}";
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
         $data = $stmt->fetchAll();
-        jsonResponse(['success' => true, 'orders' => $data, 'total' => $total]);
+        echo json_encode(['code' => 0, 'msg' => '', 'count' => $total, 'data' => $data], JSON_UNESCAPED_UNICODE);
+        exit;
         break;
-
+case 'cancel_accept':
+    $orderId = intval($input['order_id']);
+    // 验证该订单是否属于当前打手且状态为 accepted 或 in_progress
+    $stmt = $db->prepare("SELECT o.*, b.id AS booster_id FROM orders o JOIN boosters b ON o.booster_id = b.id WHERE b.user_id = ? AND o.id = ? AND o.status IN ('accepted','in_progress')");
+    $stmt->execute([$userId, $orderId]);
+    $order = $stmt->fetch();
+    if (!$order) jsonResponse(['success' => false, 'message' => '订单状态不正确或不属于您']);
+    // 清除打手并退回待接单
+    $db->prepare("UPDATE orders SET booster_id = NULL, status = 'pending' WHERE id = ?")->execute([$orderId]);
+    publishTableReload('orders');
+    publishTableReload('boosterOrders');
+    jsonResponse(['success' => true, 'message' => '已取消接单']);
+    break;
     default:
         jsonResponse(['success' => false, 'message' => '未知操作: ' . $action]);
 }
