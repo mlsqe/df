@@ -100,3 +100,15 @@
 2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] restart 
 2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] is stopping ...
 2026-05-24 06:57:32 pid:444915 Workerman[/www/wwwroot/df.mlsqe.eu.org/ws_server.php] stop success
+2026-05-26 22:41:23 pid:425739 Workerman[ws_server.php] stopping ...
+2026-05-26 22:41:24 pid:425739 worker[DeltaWS:425740] exit with status 4991
+2026-05-26 22:41:24 pid:425739 Workerman[ws_server.php] has been stopped
+2026-05-26 22:43:29 pid:1510 Workerman[ws_server.php] start in DAEMON mode
+2026-05-26 22:43:40 pid:2019 Workerman[ws_server.php] start in DAEMON mode
+2026-05-26 22:43:40 pid:2019 Workerman[ws_server.php] already running
+2026-05-26 22:43:41 pid:2099 Workerman[ws_server.php] start in DAEMON mode
+2026-05-26 22:43:41 pid:2099 Workerman[ws_server.php] already running
+2026-05-26 22:43:45 pid:2327 Workerman[ws_server.php] start in DAEMON mode
+2026-05-26 22:43:45 pid:2327 Workerman[ws_server.php] already running
+2026-05-26 22:43:49 pid:2618 Workerman[ws_server.php] start in DAEMON mode
+2026-05-26 22:43:49 pid:2618 Workerman[ws_server.php] already running

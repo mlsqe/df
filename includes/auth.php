@@ -18,8 +18,8 @@ function login($username, $password) {
     }
     return ['success' => false, 'message' => '用户名或密码错误'];
 }
+
 function register($username, $password, $realName = '', $phone = '', $role = 'user') {
-    // 防止空用户名或密码
     $username = trim($username);
     $password = trim($password);
     if ($username === '' || $password === '') {
@@ -36,7 +36,8 @@ function register($username, $password, $realName = '', $phone = '', $role = 'us
     $stmt = $db->prepare("SELECT id FROM users WHERE username = ?");
     $stmt->execute([$username]);
     if ($stmt->fetch()) return ['success' => false, 'message' => '用户名已存在'];
-    if (!in_array($role, ['user', 'booster'])) $role = 'user';
+    
+    // 移除角色限制，允许任何角色（包括pending_booster）
     $hash = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $db->prepare("INSERT INTO users (username, password_hash, real_name, phone, role) VALUES (?,?,?,?,?)");
     $stmt->execute([$username, $hash, $realName, $phone, $role]);

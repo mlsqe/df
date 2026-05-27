@@ -32,14 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
                 $log[] = "🔍 发现 " . count($tables) . " 张旧表";
                 $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
-                $dropOrder = ['disputes','transactions','progress','orders','boosters','invite_codes','recharge_log','payment_config','game_types','booster_levels','system_config','users'];
-                foreach ($dropOrder as $table) { if (in_array($table, $tables)) { $pdo->exec("DROP TABLE IF EXISTS `$table`"); $log[] = "🗑️ 删除表: $table"; } }
+                // 按外键依赖顺序删除表，避免约束冲突
+                $dropOrder = [
+                    'disputes','transactions','progress','orders','boosters','invite_codes',
+                    'recharge_log','payment_config','game_types','booster_levels','system_config','users'
+                ];
+                foreach ($dropOrder as $table) {
+                    if (in_array($table, $tables)) {
+                        $pdo->exec("DROP TABLE IF EXISTS `$table`");
+                        $log[] = "🗑️ 删除表: $table";
+                    }
+                }
                 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
                 $log[] = "✅ 数据库已重置";
             }
 
             $log[] = "📦 开始创建数据表...";
 
+            // 用户表（role 为 VARCHAR，支持动态身份）
             $pdo->exec("CREATE TABLE IF NOT EXISTS `users` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `username` VARCHAR(50) UNIQUE NOT NULL,
@@ -47,13 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `real_name` VARCHAR(50) DEFAULT '',
                 `id_card` VARCHAR(18) DEFAULT '',
                 `phone` VARCHAR(20) DEFAULT '',
+                `qq` VARCHAR(20) DEFAULT '',
+                `wechat` VARCHAR(30) DEFAULT '',
                 `avatar` VARCHAR(255) DEFAULT '',
                 `balance` DECIMAL(10,2) DEFAULT 0,
-                `role` ENUM('user','booster','admin','super_admin') DEFAULT 'user',
+                `role` VARCHAR(50) DEFAULT 'user',
                 `status` ENUM('active','banned','pending') DEFAULT 'active',
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-            try { $pdo->exec("ALTER TABLE `users` ADD COLUMN `avatar` VARCHAR(255) DEFAULT '' AFTER `phone`"); } catch (PDOException $e) {}
+            try { $pdo->exec("ALTER TABLE `users` ADD COLUMN `qq` VARCHAR(20) DEFAULT '' AFTER `phone`"); } catch (PDOException $e) {}
+            try { $pdo->exec("ALTER TABLE `users` ADD COLUMN `wechat` VARCHAR(30) DEFAULT '' AFTER `qq`"); } catch (PDOException $e) {}
+            try { $pdo->exec("ALTER TABLE `users` ADD COLUMN `avatar` VARCHAR(255) DEFAULT '' AFTER `wechat`"); } catch (PDOException $e) {}
+            try { $pdo->exec("ALTER TABLE `users` MODIFY COLUMN `role` VARCHAR(50) DEFAULT 'user'"); } catch (PDOException $e) {}
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `booster_levels` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `name` VARCHAR(50) NOT NULL,
@@ -64,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `sort_order` INT DEFAULT 0,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `boosters` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INT,
@@ -82,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
                 FOREIGN KEY (`level_id`) REFERENCES `booster_levels`(`id`) ON DELETE SET NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `orders` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `order_no` VARCHAR(30) UNIQUE NOT NULL,
@@ -101,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
                 FOREIGN KEY (`booster_id`) REFERENCES `boosters`(`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `progress` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `order_id` INT,
@@ -110,6 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `transactions` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INT,
@@ -120,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `description` VARCHAR(255),
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `disputes` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `order_id` INT,
@@ -130,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `resolved_at` TIMESTAMP NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `game_types` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `name` VARCHAR(50) NOT NULL,
@@ -140,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `status` ENUM('active','disabled') DEFAULT 'active',
                 `sort_order` INT DEFAULT 0
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `payment_config` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `pay_type` VARCHAR(20) DEFAULT 'epay',
@@ -148,22 +171,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
                 `secret_key` VARCHAR(255),
                 `status` ENUM('enabled','disabled') DEFAULT 'enabled'
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `recharge_log` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INT,
                 `order_no` VARCHAR(50),
                 `amount` DECIMAL(10,2),
                 `pay_type` VARCHAR(20),
+                `channel_code` VARCHAR(20) DEFAULT '',
                 `status` ENUM('pending','success','failed') DEFAULT 'pending',
+                `notify_data` TEXT,
                 `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 `paid_at` TIMESTAMP NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+            try { $pdo->exec("ALTER TABLE `recharge_log` ADD COLUMN `channel_code` VARCHAR(20) DEFAULT '' AFTER `pay_type`"); } catch (PDOException $e) {}
+            try { $pdo->exec("ALTER TABLE `recharge_log` ADD COLUMN `notify_data` TEXT AFTER `status`"); } catch (PDOException $e) {}
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `system_config` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `cfg_key` VARCHAR(50) UNIQUE NOT NULL,
                 `cfg_value` TEXT,
                 `description` VARCHAR(255)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
             $pdo->exec("CREATE TABLE IF NOT EXISTS `invite_codes` (
                 `id` INT AUTO_INCREMENT PRIMARY KEY,
                 `code` VARCHAR(20) UNIQUE NOT NULL,
@@ -180,13 +211,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step == 2) {
 
             $pdo->exec("INSERT IGNORE INTO `booster_levels` (`name`, `min_orders`, `min_rating`, `deposit_required`, `sort_order`) VALUES ('初级打手',0,5.0,200,1),('中级打手',50,4.8,500,2),('高级打手',200,4.9,1000,3),('王牌打手',500,4.95,2000,4)");
             $pdo->exec("INSERT IGNORE INTO `game_types` (`name`, `unit_label`, `price_per_unit`) VALUES ('跑刀','K',0.05),('跑车','M',50.00)");
+            // 默认模块权限配置（包含所有身份）
             $pdo->exec("INSERT IGNORE INTO `system_config` (`cfg_key`, `cfg_value`, `description`) VALUES 
                 ('register_open','1','是否开放注册'),
                 ('booster_register_mode','invite','打手注册方式 free/invite/deposit/invite_or_deposit'),
                 ('deposit_amount','200','打手保证金金额'),
                 ('booster_invite_limit','5','打手每周期可创建邀请码数量'),
                 ('booster_invite_period_days','30','打手邀请码创建周期（天）'),
-                ('module_permissions','{\"user\":[\"my_profile\",\"my_orders\",\"new_order\",\"history_orders\"],\"booster\":[\"my_profile\",\"my_orders\",\"new_order\",\"booster_orders\",\"booster_progress\",\"booster_invites\",\"history_orders\"],\"admin\":[\"my_profile\",\"admin_orders\",\"admin_boosters\",\"admin_disputes\",\"admin_types\",\"admin_invites\",\"admin_levels\",\"admin_settings\",\"admin_admins\",\"admin_users\",\"history_orders\"]}','各角色可见模块'),
+                ('module_permissions','{\"user\":[\"dashboard\",\"my_profile\",\"my_orders\",\"new_order\",\"history_orders\"],\"booster\":[\"dashboard\",\"my_profile\",\"my_orders\",\"new_order\",\"booster_orders\",\"booster_progress\",\"booster_invites\",\"history_orders\"],\"pending_booster\":[\"dashboard\",\"my_profile\",\"my_orders\",\"history_orders\",\"new_order\",\"booster_invites\",\"booster_orders\",\"booster_progress\"],\"admin\":[\"dashboard\",\"my_profile\",\"admin_orders\",\"admin_boosters\",\"admin_disputes\",\"admin_types\",\"admin_invites\",\"admin_levels\",\"admin_settings\",\"admin_users\",\"history_orders\"],\"super_admin\":[\"dashboard\",\"my_profile\",\"my_orders\",\"new_order\",\"booster_orders\",\"booster_progress\",\"booster_invites\",\"admin_orders\",\"admin_boosters\",\"admin_disputes\",\"admin_types\",\"admin_invites\",\"admin_levels\",\"admin_settings\",\"admin_admins\",\"admin_users\",\"admin_roles\",\"history_orders\"]}','各角色可见模块'),
                 ('ws_enabled','1','是否开启实时推送'),
                 ('ws_port','8282','WebSocket 服务端口')");
 

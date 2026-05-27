@@ -20,6 +20,10 @@ function isLoggedIn() {
     return isset($_SESSION['user_id']) && $_SESSION['user_id'] > 0;
 }
 
+/**
+ * 获取当前登录用户的完整信息
+ * @return array|null
+ */
 function getCurrentUser() {
     if (!isLoggedIn()) return null;
     $db = getDB();
@@ -84,37 +88,32 @@ function getBoosterLevels() {
     $db = getDB();
     return $db->query("SELECT * FROM booster_levels ORDER BY sort_order")->fetchAll();
 }
+
 function publishTableReload($table) {
-    // 创建一个日志文件，直接写在当前目录下
     $logFile = __DIR__ . '/ws_debug.log';
     $time = date('[Y-m-d H:i:s] ');
-    
     file_put_contents($logFile, $time . "【触发动作】试图刷新表格: {$table}\n", FILE_APPEND);
 
     if (!defined('WS_ENABLED') || !WS_ENABLED) {
         file_put_contents($logFile, "  ❌【拦截】WS_ENABLED 常量未定义，或者值不为 true\n", FILE_APPEND);
         return;
     }
-    
     if (!class_exists('Redis')) {
-        file_put_contents($logFile, "  ❌【拦截】当前网页的 PHP 环境没有安装/启用 Redis 扩展（class Redis 不存在）\n", FILE_APPEND);
+        file_put_contents($logFile, "  ❌【拦截】Redis 扩展未安装\n", FILE_APPEND);
         return;
     }
-    
     try {
         $redis = new Redis();
         $redis->connect(REDIS_HOST, REDIS_PORT);
         if (defined('REDIS_PASSWORD') && REDIS_PASSWORD) {
             $redis->auth(REDIS_PASSWORD);
         }
-        
         $result = $redis->publish(WS_REDIS_CHANNEL, json_encode([
             'type' => 'reload',
             'table' => $table
         ]));
-        
-        file_put_contents($logFile, "  ✅【成功】消息已成功送入 Redis！订阅者接收数量: {$result}\n", FILE_APPEND);
-    } catch (Exception $e) {
-        file_put_contents($logFile, "  💥【异常】Redis 报错啦: " . $e->getMessage() . "\n", FILE_APPEND);
+        file_put_contents($logFile, "  ✅【成功】消息已发布，订阅者数: {$result}\n", FILE_APPEND);
+    } catch (\Throwable $e) {
+        file_put_contents($logFile, "  💥【异常】: " . $e->getMessage() . "\n", FILE_APPEND);
     }
 }

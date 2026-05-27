@@ -38,7 +38,7 @@ if ($currentUser['role'] === 'admin') {
     }
 }
 ?>
-<h3>个人主页</h3>
+<h3>个人资料</h3>
 <div class="layui-row layui-col-space20">
     <div class="layui-col-md4">
         <div class="layui-card">
@@ -58,8 +58,6 @@ if ($currentUser['role'] === 'admin') {
             <div class="layui-card-header">身份与权限</div>
             <div class="layui-card-body">
                 <p>当前身份：<span class="layui-badge <?= $identityBadge ?>"><?= $identityLabel ?></span></p>
-
-                <!-- 预备打手 -->
                 <?php if ($boosterInfo && $boosterInfo['status'] === 'pending'): ?>
                 <div class="layui-alert layui-alert-warning" style="margin-top:10px;">
                     <i class="layui-icon layui-icon-tips"></i> 您的打手申请正在审核中。
@@ -71,21 +69,15 @@ if ($currentUser['role'] === 'admin') {
                 </div>
                 <?php endif; ?>
                 <?php endif; ?>
-
-                <!-- 被拒绝打手 -->
                 <?php if ($boosterInfo && $boosterInfo['status'] === 'banned'): ?>
                 <div class="layui-alert layui-alert-danger" style="margin-top:10px;">
                     <i class="layui-icon layui-icon-close-fill"></i> 您的打手申请已被管理员拒绝。
                 </div>
                 <button class="layui-btn layui-btn-sm layui-btn-warm" id="reapplyBoosterBtn">重新申请</button>
                 <?php endif; ?>
-
-                <!-- 正式打手 -->
                 <?php if ($boosterInfo && $boosterInfo['status'] === 'active'): ?>
                 <p style="color:#5FB878;">✅ 可接单、可生成邀请码</p>
                 <?php endif; ?>
-
-                <!-- 普通玩家 -->
                 <?php if (!$boosterInfo): ?>
                 <p style="color:#999;">暂无特殊权限</p>
                 <?php endif; ?>
@@ -113,6 +105,20 @@ if ($currentUser['role'] === 'admin') {
                         <label class="layui-form-label">手机号</label>
                         <div class="layui-input-block">
                             <input type="text" name="phone" id="phone" value="<?= sanitize($currentUser['phone']) ?>" class="layui-input">
+                        </div>
+                    </div>
+                    <!-- 新增 QQ 字段 -->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">QQ</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="qq" id="qq" value="<?= sanitize($currentUser['qq'] ?? '') ?>" class="layui-input" placeholder="选填">
+                        </div>
+                    </div>
+                    <!-- 新增 微信 字段 -->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">微信</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="wechat" id="wechat" value="<?= sanitize($currentUser['wechat'] ?? '') ?>" class="layui-input" placeholder="选填">
                         </div>
                     </div>
                     <button type="button" class="layui-btn" id="saveProfileBtn">保存信息</button>
@@ -217,18 +223,26 @@ document.getElementById('resetAvatarBtn')?.addEventListener('click', function() 
     });
 });
 
-// 保存基本信息
+// 保存基本信息（含QQ、微信）
 document.getElementById('saveProfileBtn').addEventListener('click', function() {
     var realName = document.getElementById('realName').value.trim();
     var phone = document.getElementById('phone').value.trim();
-    if (!realName && !phone) {
-        Toast.warning('昵称和手机号不能都为空');
+    var qq = document.getElementById('qq').value.trim();
+    var wechat = document.getElementById('wechat').value.trim();
+    if (!realName && !phone && !qq && !wechat) {
+        Toast.warning('至少填写一项信息');
         return;
     }
     fetch('api/profile.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update_profile', real_name: realName, phone: phone })
+        body: JSON.stringify({
+            action: 'update_profile',
+            real_name: realName,
+            phone: phone,
+            qq: qq,
+            wechat: wechat
+        })
     })
     .then(r => r.json())
     .then(res => {
@@ -267,7 +281,7 @@ document.getElementById('changePasswordBtn').addEventListener('click', function(
     .catch(function() { Toast.error('网络错误'); });
 });
 
-// 预备打手：缴纳押金（仅押金模式显示）
+// 预备打手：缴纳押金
 document.getElementById('payDepositBtn')?.addEventListener('click', function() {
     layer.confirm('确认缴纳 ¥<?= $depositAmount ?> 保证金吗？', function(index) {
         fetch('api/profile.php', {
@@ -288,7 +302,7 @@ document.getElementById('payDepositBtn')?.addEventListener('click', function() {
     });
 });
 
-// 预备打手：填写邀请码（仅押金模式显示）
+// 预备打手：填写邀请码
 document.getElementById('applyInviteBtn')?.addEventListener('click', function() {
     layer.prompt({ title: '请输入打手邀请码' }, function(code, index) {
         fetch('api/profile.php', {
